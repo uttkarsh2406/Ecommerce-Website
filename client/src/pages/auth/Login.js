@@ -1,4 +1,4 @@
-import React from "react";
+import React , { useEffect, useState } from "react";
 import { Auth, googleAUthProvider } from "./../../firebase";
 import {
   sendSignInLinkToEmail,
@@ -10,12 +10,19 @@ import "react-toastify/dist/ReactToastify.css";
 import { Button, Result } from "antd";
 import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
-import { async } from "@firebase/util";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Login({ history }) {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const {user}=useSelector((state)=>({...state}));
+  useEffect(()=>{
+    if(user && user.token){
+      history.push('/')
+    }
+  },[user])
   let dispatch = useDispatch();
   async function handleSubmit(e) {
     e.preventDefault();
@@ -42,7 +49,7 @@ function Login({ history }) {
   }
 
   async function googleLogin() {
-    signInWithPopup(Auth,googleAUthProvider)
+    signInWithPopup(Auth, googleAUthProvider)
       .then(async (result) => {
         const { user } = result;
         const idTokenResult = user.getIdTokenResult();
@@ -106,9 +113,9 @@ function Login({ history }) {
       <div className="row">
         <div className="col-md-6 offset-md-3">
           {loading ? (
-              <h4 className="text-danger">loading......</h4>
-              ) : (
-              <h4>Login</h4>
+            <h4 className="text-danger">loading......</h4>
+          ) : (
+            <h4>Login</h4>
           )}
           {loginForm()}
           <Button
@@ -122,6 +129,9 @@ function Login({ history }) {
           >
             Login with Google
           </Button>
+          <Link to="/forgot/password" className="float-right text-danger">
+            forgot Password
+          </Link>
         </div>
       </div>
     </div>
