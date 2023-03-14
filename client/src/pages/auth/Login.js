@@ -1,13 +1,14 @@
 import React from "react";
-import { Auth } from "./../../firebase";
+import { Auth, googleAUthProvider } from "./../../firebase";
 import {
   sendSignInLinkToEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
 } from "firebase/auth";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button, Result } from "antd";
-import { MailOutlined } from "@ant-design/icons";
+import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { async } from "@firebase/util";
 
@@ -18,11 +19,11 @@ function Login({ history }) {
   let dispatch = useDispatch();
   async function handleSubmit(e) {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     await signInWithEmailAndPassword(Auth, email, password)
       .then(async (result) => {
         // console.log(result);
-        const {user} = result;
+        const { user } = result;
         const idTokenResult = await user.getIdTokenResult();
         dispatch({
           type: "LOGGED_IN_USER",
@@ -37,6 +38,26 @@ function Login({ history }) {
         console.log(error);
         toast.error(error.message);
         setLoading(false);
+      });
+  }
+
+  async function googleLogin() {
+    signInWithPopup(Auth,googleAUthProvider)
+      .then(async (result) => {
+        const { user } = result;
+        const idTokenResult = user.getIdTokenResult();
+        dispatch({
+          type: "LOGGED_IN_USER",
+          payload: {
+            email: user.email,
+            token: idTokenResult,
+          },
+        });
+        history.push("/");
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error.message);
       });
   }
   function loginForm() {
@@ -84,8 +105,23 @@ function Login({ history }) {
     <div className="container p-5 ">
       <div className="row">
         <div className="col-md-6 offset-md-3">
-          <h4>Login</h4>
+          {loading ? (
+              <h4 className="text-danger">loading......</h4>
+              ) : (
+              <h4>Login</h4>
+          )}
           {loginForm()}
+          <Button
+            type="danger"
+            className="btn btn-primary mt-2 mb-3"
+            onClick={googleLogin}
+            block
+            shape="round"
+            icon={<GoogleOutlined />}
+            size="large"
+          >
+            Login with Google
+          </Button>
         </div>
       </div>
     </div>
