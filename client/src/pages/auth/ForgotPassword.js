@@ -13,15 +13,15 @@ function ForgotPassword({ history }) {
     if(user && user.token){
       history.push('/')
     }
-  },[])
+  },[user,history])
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
 
-    const config={
-        url: process.env.FORGOT_PASSWORD_REDIRECT,
-        handleCodeInApp:true,
-    }
+    // const config={
+    //     url: process.env.FORGOT_PASSWORD_REDIRECT,
+    //     handleCodeInApp:true,
+    // }
     await sendPasswordResetEmail(Auth,email).then((result)=>{
         setEmail('');
         setLoading(false);

@@ -9,13 +9,12 @@ import RegisterComplete from "./pages/auth/RegisterComplete";
 
 import { Auth } from "./firebase";
 import { useDispatch } from "react-redux";
-import { async } from "@firebase/util";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
-    const unsubscribe = Auth.onAuthStateChanged(async (user) => {
+    Auth.onAuthStateChanged(async (user) => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
         dispatch({

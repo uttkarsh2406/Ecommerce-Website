@@ -1,13 +1,12 @@
 import React , { useEffect, useState } from "react";
 import { Auth, googleAUthProvider } from "./../../firebase";
 import {
-  sendSignInLinkToEmail,
   signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
-import { toast, ToastContainer } from "react-toastify";
+import { toast} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Button, Result } from "antd";
+import { Button } from "antd";
 import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -22,7 +21,7 @@ function Login({ history }) {
     if(user && user.token){
       history.push('/')
     }
-  },[user])
+  },[user,history])
   let dispatch = useDispatch();
   async function handleSubmit(e) {
     e.preventDefault();

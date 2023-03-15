@@ -45,7 +45,7 @@ function Header() {
           className="ms-auto"
           key="SubMenu"
           icon={<SettingOutlined />}
-          title={<span>{user.email && user.email.split('@')[0]}</span>}
+          title={<span>{user.email && user.email.split("@")[0]}</span>}
         >
           <Menu.Item key="Option1">
             {/* <Link Link to="/option1"></Link> */}
@@ -59,7 +59,7 @@ function Header() {
         </Menu.SubMenu>
       )}
 
-      {!user  && (
+      {!user && (
         <Menu.Item className="ms-auto" key="Login" icon={<UserOutlined />}>
           <Link Link to="/login">
             Login
@@ -67,7 +67,7 @@ function Header() {
         </Menu.Item>
       )}
 
-      {!user  && (
+      {!user && (
         <Menu.Item key="Register" icon={<UserAddOutlined />} onClick={logout()}>
           <Link Link to="/register">
             Register
