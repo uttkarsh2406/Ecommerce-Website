@@ -1,7 +1,9 @@
 const express=require('express')
 const router=express.Router()
 const {createOrUpdateUser}=require('./../controllers/auth')
+const {authCheck}=require('./../middlewears/auth')
 
-router.get("/create-or-update-user",createOrUpdateUser)
+
+router.post("/create-or-update-user",authCheck,createOrUpdateUser)
 
 module.exports=router;

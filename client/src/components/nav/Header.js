@@ -17,7 +17,6 @@ function Header() {
   const [current, setCurrent] = useState("home");
   let dispatch = useDispatch();
   let { user } = useSelector((state) => ({ ...state }));
-  console.log(user);
   let history = useHistory();
   function onClick(e) {
     // console.log(e);
