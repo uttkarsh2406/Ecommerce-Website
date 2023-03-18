@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import { Auth } from "./../../firebase";
-import {
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-  updatePassword,
-} from "firebase/auth";
+import { signInWithEmailLink, updatePassword } from "firebase/auth";
 
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { async } from "@firebase/util";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { createOrUpdateUser } from "./../../functions/auth";
 
-function RegisterComplete({ history }) {
-  const [email, setEmail] = React.useState("");
-  const [passwaord, setPassword] = React.useState("");
+function RegisterComplete(props) {
+  const { history } = props;
+  const [email, setEmail] = useState("");
+  const [passwaord, setPassword] = useState("");
+
   useState(() => {
     setEmail(window.localStorage.getItem("emailForRegistration"));
-  }, []);
+  }, [history]);
+
+  let dispatch = useDispatch();
+
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -27,7 +30,7 @@ function RegisterComplete({ history }) {
       toast.error("password must be atleast 6 characters long");
       return;
     }
-    await signInWithEmailLink(Auth, email, window.location.href)
+    signInWithEmailLink(Auth, email, window.location.href)
       .then(async (result) => {
         //  console.log(result);
         if (result.user.emailVerified) {
@@ -38,11 +41,31 @@ function RegisterComplete({ history }) {
           window.localStorage.removeItem("emailForRegistration");
           let user = Auth.currentUser;
           await updatePassword(user, passwaord)
-            .then(() => {})
-            .catch((error) => {});
+            .then(() => {
+              console.log("Password Updated");
+            })
+            .catch((err) => {
+              console.log(err);
+            });
 
           const idTokenResult = await user.getIdTokenResult();
-
+          // console.log(user);
+          createOrUpdateUser(idTokenResult.token)
+            .then((res) => {
+              dispatch({
+                type: "LOGGED_IN_USER",
+                payload: {
+                  name: res.data.name,
+                  email: res.data.email,
+                  token: idTokenResult.token,
+                  role: res.data.role,
+                  _id: res.data._id,
+                },
+              });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
           history.push("/");
         }
       })
@@ -61,7 +84,7 @@ function RegisterComplete({ history }) {
           onChange={(e) => {
             setPassword(e.target.value);
           }}
-          placeholder="password"
+          placeholder="Password"
           autoFocus
         />
 

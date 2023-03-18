@@ -8,50 +8,63 @@ import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { async } from "@firebase/util";
-
-async function createOrUpdateUser(authToken){
-  return await axios.post(`${process.env.REACT_APP_API}/create-or-update-user`,{},{
-    headers:{
-      authToken,
-    }
-  })
-}
+import {createOrUpdateUser} from "./../../functions/auth"
 
 
-function Login({ history }) {
+
+function Login(props) {
+  const {history}=props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => ({ ...state }));
   useEffect(() => {
     if (user && user.token) {
-      history.push("/");
+      // roleBasedRedirect(res);
+      // history.push('/')
+
     }
   }, [user, history]);
   let dispatch = useDispatch();
+  
+  const roleBasedRedirect=(res)=>{
+    if(res.data.role==="admin"){
+      history.push("/admin/dashboard");
+    }
+    else{
+       history.push("/user/history");
+    }
+  };
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
-    await signInWithEmailAndPassword(Auth, email, password)
+    signInWithEmailAndPassword(Auth, email, password)
       .then(async (result) => {
         // console.log(result);
         const { user } = result;
         const idTokenResult = await user.getIdTokenResult();
-        createOrUpdateUser(idTokenResult.token).then((res)=>{
-          console.log("Create OR Update Res",res);
-        }).catch((err)=>{
-          console.log(err);
-        })
-        // dispatch({
-        //   type: "LOGGED_IN_USER",
-        //   payload: {
-        //     email: user.email,
-        //     token: idTokenResult,
-        //   },
-        // });
-        // history.push("/");
+        createOrUpdateUser(idTokenResult.token)
+          .then((res) => {
+
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+            roleBasedRedirect(res);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+
+
+        
       })
       .catch((error) => {
         console.log(error);
@@ -61,28 +74,40 @@ function Login({ history }) {
   }
 
   async function googleLogin() {
-    signInWithPopup(Auth, googleAUthProvider)
+    await signInWithPopup(Auth, googleAUthProvider)
       .then(async (result) => {
         const { user } = result;
-        const idTokenResult = user.getIdTokenResult();
-        dispatch({
-          type: "LOGGED_IN_USER",
-          payload: {
-            email: user.email,
-            token: idTokenResult,
-          },
-        });
-        history.push("/");
+        const idTokenResult = await user.getIdTokenResult();
+        createOrUpdateUser(idTokenResult.token)
+          .then((res) => {
+
+            dispatch({
+              type: "LOGGED_IN_USER",
+              payload: {
+                name: res.data.name,
+                email: res.data.email,
+                token: idTokenResult.token,
+                role: res.data.role,
+                _id: res.data._id,
+              },
+            });
+            roleBasedRedirect(res);
+
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
       })
       .catch((error) => {
         console.log(error);
         toast.error(error.message);
       });
   }
-  function loginForm() {
-    return (
+  const loginForm=() =>(
+  
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group mb-3">
           <input
             type="email"
             className="form-control"
@@ -115,11 +140,12 @@ function Login({ history }) {
           size="large"
           disabled={!email || password.length < 6}
         >
-          Login with Email/Password
+          Login with Email/Password 
         </Button>
       </form>
-    );
-  }
+  );
+    
+  
   return (
     <div className="container p-5 ">
       <div className="row">
@@ -141,6 +167,7 @@ function Login({ history }) {
           >
             Login with Google
           </Button>
+
           <Link to="/forgot/password" className="float-right text-danger">
             forgot Password
           </Link>

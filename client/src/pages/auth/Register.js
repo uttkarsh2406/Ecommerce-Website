@@ -4,15 +4,22 @@ import { sendSignInLinkToEmail } from "firebase/auth";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector } from "react-redux";
-function Register({history}) {
+
+
+
+function Register(props) {
+  const {history}=props;
   const [email, setEmail] = useState("");
 
   const { user } = useSelector((state) => ({ ...state }));
+
   useEffect(() => {
     if (user && user.token) {
       history.push("/");
     }
   }, [user,history]);
+
+  
   async function handleSubmit(e) {
     e.preventDefault();
     const config = {

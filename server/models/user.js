@@ -10,7 +10,7 @@ const userSchema=new mongoose.Schema({
     },
     role:{
         type:String,
-        default: "suscriber",
+        default: "subscriber",
     },
     cart:{
         type:Array,

@@ -12,24 +12,30 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Auth } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+
+
+
 function Header() {
   const [current, setCurrent] = useState("home");
   let dispatch = useDispatch();
   let { user } = useSelector((state) => ({ ...state }));
-  let history = useHistory();
   function onClick(e) {
     // console.log(e);
     setCurrent(e.key);
   }
 
   function logout() {
-    Auth.signOut();
-    dispatch({
-      type: "LOGOUT",
-      payload: null,
-    });
-    history.push("/login");
+
+    Auth.signOut().then(()=>{
+
+      dispatch({
+        type: "LOGOUT",
+        payload: null,
+      });
+      // history.push("/login");
+    }).catch((err)=>{
+      console.log(err);
+    })
   }
   return (
     <Menu mode="horizontal" onClick={onClick} selectedKeys={[current]}>
@@ -67,7 +73,7 @@ function Header() {
       )}
 
       {!user && (
-        <Menu.Item key="Register" icon={<UserAddOutlined />} onClick={logout()}>
+        <Menu.Item key="Register" icon={<UserAddOutlined />} >
           <Link Link to="/register">
             Register
           </Link>
