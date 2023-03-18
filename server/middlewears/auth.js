@@ -1,4 +1,5 @@
 const admin = require("./../firebase");
+const User=require("./../models/user")
 
 exports.authCheck = async (req, res, next) => {
   // console.log(req.headers.authtoken);
@@ -13,3 +14,20 @@ exports.authCheck = async (req, res, next) => {
     res.status(401).send("err: Invalid Token");
   }
 };
+
+
+exports.adminCheck=async(req,res,next)=>{
+  const email=req.user;
+
+  User.findOne({email}).then((adminUser)=>{
+    if(adminUser.role!=="admin"){
+      res.status(403).json({
+        err:"Admin resource. Access Denied",
+      })
+      return;
+    }
+    next()
+  }).catch((err)=>{
+    console.log(err);
+  })
+}
