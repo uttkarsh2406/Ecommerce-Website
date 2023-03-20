@@ -17,11 +17,13 @@ import UserRoute from "./components/routes/UserRoute";
 import { onAuthStateChanged } from "firebase/auth";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRoute from "./components/routes/AdminRoute";
+import categoryCreate from "./pages/admin/category/CategoryCreate";
+import CategoryUpdate from "./pages/admin/category/CategoryUpgrade";
 
 function App() {
   const dispatch = useDispatch();
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(Auth,async (user) => {
+    const unsubscribe = onAuthStateChanged(Auth, async (user) => {
       if (user) {
         const idTokenResult = await user.getIdTokenResult();
         currentUser(idTokenResult.token)
@@ -59,6 +61,12 @@ function App() {
         <UserRoute exact path="/user/password" component={Password} />
         <UserRoute exact path="/user/wishlist" component={Wishlist} />
         <AdminRoute exact path="/admin/dashboard" component={AdminDashboard} />
+        <AdminRoute exact path="/admin/category" component={categoryCreate} />
+        <AdminRoute
+          exact
+          path="/admin/category/:slug"
+          component={CategoryUpdate}
+        />
       </Switch>
     </div>
   );

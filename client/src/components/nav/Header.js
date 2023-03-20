@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Auth } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";
+import Item from "antd/es/list/Item";
 
 
 
@@ -52,10 +53,13 @@ function Header() {
           icon={<SettingOutlined />}
           title={<span>{user.email && user.email.split("@")[0]}</span>}
         >
-          <Menu.Item key="Option1">
-            {/* <Link Link to="/option1"></Link> */}
-            option1
-          </Menu.Item>
+
+          {user && user.role==="subscriber" && <Menu.Item>
+            <Link to="/user/history">Dashboard</Link>
+            </Menu.Item>}
+            {user && user.role==="admin" && <Menu.Item>
+            <Link to="/admin/dashboard">Dashboard</Link>
+            </Menu.Item>}
 
           <Menu.Item key="Logout" icon={<LogoutOutlined />} onClick={logout}>
             Logout

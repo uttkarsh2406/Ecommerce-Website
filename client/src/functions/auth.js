@@ -1,4 +1,3 @@
-import { async } from "@firebase/util";
 import axios from "axios";
 
 export const createOrUpdateUser = async (authtoken) => {
