@@ -10,12 +10,15 @@ import {
 } from "../../../functions/category";
 import { Link } from "react-router-dom";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import CategoryForm from "../../../components/Forms/CategoryForm";
+import LocalSearch from "../../../components/Forms/LocalSearch";
 
 const CategoryCreate = () => {
   const { user } = useSelector((state) => ({ ...state }));
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [keyword, setKeyword] = useState("");
 
   useEffect(() => {
     loadCategories();
@@ -64,24 +67,14 @@ const CategoryCreate = () => {
       });
   };
 
-  const CategoryForm = () => (
-    <form onSubmit={handleSbumit}>
-      <div className="form-group mb-2">
-        <label>Name</label>
-        <input
-          type="text"
-          className="form-control mb-2"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          placeholder="Enter New Password"
-          autoFocus
-        />
-        <button className="btn btn-outline-primary mb-5">Save</button>
-      </div>
-    </form>
-  );
+  const handleSearchChange = (e) => {
+    e.preventDefault();
+    setKeyword(e.target.value.toLowerCase());
+  };
+
+  const searched = (keyword) => (c) => {
+    return c.name.toLowerCase().includes(keyword);
+  };
 
   return (
     <div className="container-fluid">
@@ -95,10 +88,15 @@ const CategoryCreate = () => {
           ) : (
             <h4>Create Category</h4>
           )}
+          <CategoryForm
+            handleSbumit={handleSbumit}
+            name={name}
+            setName={setName}
+          />
 
-          {CategoryForm()}
+          <LocalSearch keyword={keyword} setKeyword={setKeyword} />
 
-          {categories.map((c) => (
+          {categories.filter(searched(keyword)).map((c) => (
             <div className="alert alert-secondary" key={c._id}>
               {c.name}
               <span

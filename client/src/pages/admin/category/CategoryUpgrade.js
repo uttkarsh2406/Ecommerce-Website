@@ -4,16 +4,13 @@ import { toast } from "react-toastify";
 
 import { useSelector } from "react-redux";
 import { getCategory, updateCategory } from "../../../functions/category";
+import CategoryForm from "../../../components/Forms/CategoryForm";
 
 const CategoryUpdate = (props) => {
   const { history, match } = props;
   const { user } = useSelector((state) => ({ ...state }));
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    loadCategory();
-  }, []);
 
   const loadCategory = () => {
     getCategory(match.params.slug)
@@ -24,6 +21,10 @@ const CategoryUpdate = (props) => {
         console.log(err);
       });
   };
+  useEffect(() => {
+    loadCategory();
+  }, );
+
 
   const handleSbumit = (e) => {
     e.preventDefault();
@@ -41,24 +42,6 @@ const CategoryUpdate = (props) => {
       });
   };
 
-  const CategoryForm = () => (
-    <form onSubmit={handleSbumit}>
-      <div className="form-group mb-2">
-        <label>Name</label>
-        <input
-          type="text"
-          className="form-control mb-2"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          placeholder="Enter New Password"
-          autoFocus
-        />
-        <button className="btn btn-outline-primary mb-5">Save</button>
-      </div>
-    </form>
-  );
 
   return (
     <div className="container-fluid">
@@ -73,7 +56,7 @@ const CategoryUpdate = (props) => {
             <h4>Update Category</h4>
           )}
 
-          {CategoryForm()}
+          <CategoryForm handleSbumit={handleSbumit} name={name} setName={setName} />
         </div>
       </div>
     </div>
