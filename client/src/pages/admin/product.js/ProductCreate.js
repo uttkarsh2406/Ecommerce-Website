@@ -3,12 +3,15 @@ import AdminNav from "../../../components/nav/AdminNav";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { createProduct } from "../../../functions/product";
-
+import { getCategories, getCategorySubs } from "../../../functions/category";
+import { useEffect } from "react";
+import ProductCreateForm from "../../../components/Forms/ProductCreateForm";
 const initialState = {
   title: "MacBook Pro",
-  description: "This is best laptop",
-  price: "120000",
-  categries: "",
+  description:
+    "MacBook Pro. Our most powerful notebooks. Fast M1 processors, incredible graphics, and spectacular Retina displays. Now available in a 14-inch model.",
+  price: "180000",
+  categories: "",
   category: "",
   subs: [],
   shipping: "",
@@ -31,40 +34,49 @@ const initialState = {
 };
 
 const ProductCreate = () => {
-    const {user}=useSelector((state)=>({...state}));
+  const { user } = useSelector((state) => ({ ...state }));
   const [values, setValues] = useState(initialState);
-  const {
-    title,
-    description,
-    price,
-    categories,
-    category,
-    quantity,
-    subs,
-    shipping,
-    images,
-    colors,
-    brands,
-    color,
-    brand,
-  } = values;
+  const [subOptions, setSubOptions] = useState([]);
+  const [showSub, setShowSub] = useState(false);
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  const loadCategories = () => {
+    getCategories()
+      .then((result) => {
+        setValues({ ...values, categories: result.data });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createProduct(values,user.token).then((res)=>{
+    createProduct(values, user.token)
+      .then((res) => {
         toast.success("Product Created");
-
-        
-    }).catch((error)=>{
-        toast.error(error.response.data.err)
-    })
-
+      })
+      .catch((error) => {
+        toast.error(error.response.data.err);
+      });
   };
 
   const handleChange = (e) => {
-    setValues({...values,[e.target.name]:e.target.value})
+    setValues({ ...values, [e.target.name]: e.target.value });
   };
 
+  const handleCategoryChange = (e) => {
+    e.preventDefault();
+    setValues({ ...values,subs:[], category: e.target.value });
+    getCategorySubs(e.target.value)
+      .then((result) => {
+        setSubOptions(result.data);
+      })
+      .catch((err) => {});
+      setShowSub(true)
+  };
   return (
     <div className="container-fluid">
       <div className="row">
@@ -73,98 +85,15 @@ const ProductCreate = () => {
         </div>
         <div className="col-md-10">
           <h4>Product Create </h4>
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Title</label>
-              <input
-                type="text"
-                name="title"
-                className="form-control"
-                value={title}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Description</label>
-              <input
-                type="text"
-                name="description"
-                className="form-control"
-                value={description}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Price</label>
-              <input
-                type="text"
-                name="price"
-                className="form-control"
-                value={price}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Shipping</label>
-              <select
-                name="shipping"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>-- Please select --</option>
-
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Quantity</label>
-              <input
-                type="text"
-                name="quantity"
-                className="form-control"
-                value={quantity}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>color</label>
-              <select
-                name="color"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>-- Please select --</option>
-                {colors.map((c) => {
-                  return (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Brand</label>
-              <select
-                name="brand"
-                className="form-control"
-                onChange={handleChange}
-              >
-                <option>-- Please select --</option>
-                {brands.map((c) => {
-                  return (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
-            <button className="btn btn-outline-info mt-4" type="submit">
-              Save
-            </button>
-          </form>
+          <ProductCreateForm
+            handleSubmit={handleSubmit}
+            handleChange={handleChange}
+            setValues={setValues}
+            handleCategoryChange={handleCategoryChange}
+            subOptions={subOptions}
+            showSub={showSub}
+            values={values}
+          />
         </div>
       </div>
     </div>

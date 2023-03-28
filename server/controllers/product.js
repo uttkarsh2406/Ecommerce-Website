@@ -16,3 +16,11 @@ exports.create=async(req,res)=>{
     }
 }
 
+exports.read=async(req,res)=>{
+    await Product.find({}).then((result)=>{
+        res.json(result);
+    })
+    .catch((error)=>{
+        console.log(error);
+    })
+}
