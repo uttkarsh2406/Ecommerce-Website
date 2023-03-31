@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema(
     subs: [
       {
         type: ObjectId,
-        ref: "sub",
+        ref: "Sub",
       },
     ],
     quantity: Number,
