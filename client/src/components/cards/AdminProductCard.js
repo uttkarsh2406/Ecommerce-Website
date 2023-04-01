@@ -5,8 +5,8 @@ import { Card } from "antd";
 const { Meta } = Card;
 
 const AdminProductCard = (props) => {
-  const { product } = props;
-  const { title, description, images } = product;
+  const { product,handleRemove } = props;
+  const { title, description, images,slug } = product;
   return (
     <Card
       cover={
@@ -18,7 +18,7 @@ const AdminProductCard = (props) => {
       }
       actions={[
         <EditOutlined className="text-danger" />,
-        <DeleteOutlined className="text-danger" />,
+        <DeleteOutlined className="text-danger" onClick={()=>handleRemove(slug)} />,
       ]}
     >
       <Meta
