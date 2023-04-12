@@ -23,6 +23,8 @@ import SubCreate from "./pages/admin/sub/SubCreate";
 import SubUpdate from "./pages/admin/sub/SubUpdate";
 import ProductCreate from "./pages/admin/product.js/ProductCreate";
 import AllProducts from "./pages/admin/product.js/AllProducts.";
+import ProductUpdate from "./pages/admin/product.js/ProductUpdate";
+import Product from "./pages/Product";
 
 function App() {
   const dispatch = useDispatch();
@@ -61,6 +63,7 @@ function App() {
         <Route exact path="/register" component={Register} />
         <Route exact path="/register/complete" component={RegisterComplete} />
         <Route exact path="/forgot/password" component={ForgotPassword} />
+        <Route exact path="/product/:slug" component={Product} />
         <UserRoute exact path="/user/history" component={History} />
         <UserRoute exact path="/user/password" component={Password} />
         <UserRoute exact path="/user/wishlist" component={Wishlist} />
@@ -75,6 +78,11 @@ function App() {
         <AdminRoute exact path="/admin/sub/:slug" component={SubUpdate} />
         <AdminRoute exact path="/admin/product" component={ProductCreate} />
         <AdminRoute exact path="/admin/products" component={AllProducts} />
+        <AdminRoute
+          exact
+          path="/admin/product/:slug"
+          component={ProductUpdate}
+        />
       </Switch>
     </div>
   );

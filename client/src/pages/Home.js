@@ -1,10 +1,32 @@
 import React from "react";
-function Home() {
+import Jumbotron from "../components/cards/Jumbotron";
+import NewArrivals from "../components/home/NewArrivals";
+import BestSellers from "../components/home/BestSellers";
+
+const Home = () => {
   return (
-    <div className="App">
-      <p>React Home</p>
+    <div>
+      <div className="mt-4 p-5 bg-secondary text-danger rounded text-center fw-bold">
+        <div class="container">
+          <h1 class="display-4">
+            <Jumbotron
+              text={["Latest Products", "New Arrivals", "Best Sellers"]}
+            />
+          </h1>
+        </div>
+      </div>
+      <h3 className="text-center p-3 mt-5 display-4 bg-secondary rounded text-center">
+        <Jumbotron text={"New Arrivals"} />
+      </h3>
+      <NewArrivals />
+      <h3 className="text-center p-3 mt-5 display-4 bg-secondary rounded text-center">
+        <Jumbotron text={"Best Sellers"} />
+      </h3>
+      <BestSellers />
+      <br/>
+      <br/>
     </div>
   );
-}
+};
 
 export default Home;

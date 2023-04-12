@@ -16,6 +16,7 @@ exports.authCheck = async (req, res, next) => {
 };
 
 
+
 exports.adminCheck=async(req,res,next)=>{
   const {email}=req.user;
 

@@ -2,7 +2,7 @@ import React from "react";
 import Resizer from "react-image-file-resizer";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Avatar, Badge,Space } from "antd";
+import { Avatar, Badge, Space } from "antd";
 
 const FileUpload = (props) => {
   const { user } = useSelector((state) => ({ ...state }));
@@ -48,48 +48,56 @@ const FileUpload = (props) => {
     }
   };
 
-  const handleImageRemove=(public_id)=>{
-    setLoading(true)
-    axios.post(`${process.env.REACT_APP_API}/removeimages`,{public_id},{
-      headers:{
-        authtoken: user ? user.token : "",
-      }
-    }).then((result)=>{
-      setLoading(false);
-      const {images}=values
-      let filterImages=images.filter((item)=>{
-        return item.public_id!==public_id;
+  const handleImageRemove = (public_id) => {
+    setLoading(true);
+    axios
+      .post(
+        `${process.env.REACT_APP_API}/removeimages`,
+        { public_id },
+        {
+          headers: {
+            authtoken: user ? user.token : "",
+          },
+        }
+      )
+      .then((result) => {
+        setLoading(false);
+        const { images } = values;
+        let filterImages = images.filter((item) => {
+          return item.public_id !== public_id;
+        });
+        setValues({ ...values, images: filterImages });
       })
-      setValues({...values,images:filterImages});
-    }).catch((err)=>{
-      setLoading(false);
-      console.log(err);
-    })
-  }
+      .catch((err) => {
+        setLoading(false);
+        console.log(err);
+      });
+  };
 
   return (
     <div>
       <div className="row">
         {values.images &&
           values.images.map((img) => (
-            <span style={{width:"auto"}}>
-
-            <Badge count="X" key={img.public_id} onClick={()=> handleImageRemove(img.public_id)} style={{cursor:"pointer"}}>
-              <Avatar
-                shape="square"
-                
-                src={img.url}
-                size={150}
-                className="ml-3"
+            <span style={{ width: "auto" }}>
+              <Badge
+                count="X"
+                key={img.public_id}
+                onClick={() => handleImageRemove(img.public_id)}
+                style={{ cursor: "pointer" }}
+              >
+                <Avatar
+                  shape="square"
+                  src={img.url}
+                  size={150}
+                  className="ml-3"
                 />
               </Badge>
-                </span>
-     
+            </span>
           ))}
       </div>
       <div className="row">
         <label className="btn btn-primary btn-raised" Style="width:200px">
-          {" "}
           Choose File
           <input
             type="file"

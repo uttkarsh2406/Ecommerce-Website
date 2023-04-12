@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import AdminNav from "./../../../components/nav/AdminNav";
-import { getProdcutsByCount } from "./../../../functions/product";
+import { getProductsByCount } from "./../../../functions/product";
 import AdminProductCard from "./../../../components/cards/AdminProductCard";
 import { removeProduct } from "./../../../functions/product";
 import { useSelector } from "react-redux";
@@ -15,7 +15,7 @@ const AllProducts = () => {
 
   const loadAllProducts = () => {
     setLoading(true);
-    getProdcutsByCount(15)
+    getProductsByCount(15)
       .then((res) => {
         setProducts(res.data);
         setLoading(false);
