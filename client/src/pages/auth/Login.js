@@ -8,31 +8,36 @@ import { MailOutlined, GoogleOutlined } from "@ant-design/icons";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {createOrUpdateUser} from "./../../functions/auth"
-
-
+import { createOrUpdateUser } from "./../../functions/auth";
 
 function Login(props) {
-  const {history}=props;
+  const { history } = props;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const { user } = useSelector((state) => ({ ...state }));
   useEffect(() => {
-    if (user && user.token) {
-      // roleBasedRedirect(res);
-      // history.push('/')
-
+    let intended = history.location.state;
+    if (intended) {
+      return;
+    } else {
+      if (user && user.token) {
+        history.push("/");
+      }
     }
   }, [user, history]);
   let dispatch = useDispatch();
-  
-  const roleBasedRedirect=(res)=>{
-    if(res.data.role==="admin"){
-      history.push("/admin/dashboard");
-    }
-    else{
-       history.push("/user/history");
+
+  const roleBasedRedirect = (res) => {
+    let intended = history.location.state;
+    if (intended) {
+      history.push(intended.from);
+    } else {
+      if (res.data.role === "admin") {
+        history.push("/admin/dashboard");
+      } else {
+        history.push("/user/history");
+      }
     }
   };
   async function handleSubmit(e) {
@@ -45,7 +50,6 @@ function Login(props) {
         const idTokenResult = await user.getIdTokenResult();
         createOrUpdateUser(idTokenResult.token)
           .then((res) => {
-
             dispatch({
               type: "LOGGED_IN_USER",
               payload: {
@@ -61,10 +65,6 @@ function Login(props) {
           .catch((err) => {
             console.log(err);
           });
-
-
-
-        
       })
       .catch((error) => {
         console.log(error);
@@ -80,7 +80,6 @@ function Login(props) {
         const idTokenResult = await user.getIdTokenResult();
         createOrUpdateUser(idTokenResult.token)
           .then((res) => {
-
             dispatch({
               type: "LOGGED_IN_USER",
               payload: {
@@ -92,60 +91,56 @@ function Login(props) {
               },
             });
             roleBasedRedirect(res);
-
           })
           .catch((err) => {
             console.log(err);
           });
-
       })
       .catch((error) => {
         console.log(error);
         toast.error(error.message);
       });
   }
-  const loginForm=() =>(
-  
-      <form onSubmit={handleSubmit}>
-        <div className="form-group mb-3">
-          <input
-            type="email"
-            className="form-control"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-            placeholder="Enter Your Email"
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="password"
-            className="form-control"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-            placeholder="Enter Your Password"
-          />
-        </div>
-        <br />
-        <Button
-          type="primary"
-          className="btn btn-primary mt-2 mb-3"
-          onClick={handleSubmit}
-          block
-          shape="round"
-          icon={<MailOutlined />}
-          size="large"
-          disabled={!email || password.length < 6}
-        >
-          Login with Email/Password 
-        </Button>
-      </form>
+  const loginForm = () => (
+    <form onSubmit={handleSubmit}>
+      <div className="form-group mb-3">
+        <input
+          type="email"
+          className="form-control"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+          }}
+          placeholder="Enter Your Email"
+        />
+      </div>
+      <div className="form-group">
+        <input
+          type="password"
+          className="form-control"
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value);
+          }}
+          placeholder="Enter Your Password"
+        />
+      </div>
+      <br />
+      <Button
+        type="primary"
+        className="btn btn-primary mt-2 mb-3"
+        onClick={handleSubmit}
+        block
+        shape="round"
+        icon={<MailOutlined />}
+        size="large"
+        disabled={!email || password.length < 6}
+      >
+        Login with Email/Password
+      </Button>
+    </form>
   );
-    
-  
+
   return (
     <div className="container p-5 ">
       <div className="row">

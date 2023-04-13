@@ -1,4 +1,5 @@
 const Product = require("./../models/product");
+const User = require("./../models/user");
 const slugify = require("slugify");
 
 exports.create = async (req, res) => {
@@ -115,3 +116,33 @@ exports.productsCount = async (req, res) => {
       console.log(error);
     });
 };
+
+exports.productStar = async (req, res) => {
+  const product = await Product.findById(req.params.productId).exec();
+  const user = await User.findOne({ email: req.user.email }).exec();
+
+  const { star } = req.body;
+
+  let existingRatingObject = product.ratings.find(
+    (ele) => ele.postedBy.toString() === user._id.toString()
+  );
+
+  if (existingRatingObject === undefined) {
+    const ratingAdded = await Product.findByIdAndUpdate(
+      product._id,
+      {
+        $push: { ratings: { star: star, postedBy: user._id } },
+      },
+      { new: true }
+    ).exec();
+    res.json(ratingAdded);
+  } else {
+    const ratingUpdated = await Product.updateOne(
+      { ratings: { $elemMatch: existingRatingObject } },
+      { $set: { "ratings.$.star": star } },
+      { new: true }
+    ).exec();
+    res.json(ratingUpdated);
+  }
+};
+

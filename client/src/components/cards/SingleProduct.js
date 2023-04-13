@@ -6,13 +6,15 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import laptop from "./../../images/lapp.png";
 import ProductListItem from "./ProductListItem";
+import StarRating from "react-star-ratings";
+import RatingModal from "../modal/RatingModal";
 const { Meta } = Card;
 
-const {TabPane}=Tabs
+const { TabPane } = Tabs;
 
 const SingleProduct = (props) => {
-  const { product } = props;
-  const { title, description, slug, images } = product;
+  const { product, onStarClick,star } = props;
+  const { _id, title, description, slug, images } = product;
 
   return (
     <div className="row">
@@ -21,7 +23,7 @@ const SingleProduct = (props) => {
           <Carousel showArrows={true} autoPlay infiniteLoop>
             {images &&
               images.map((image) => {
-                  return <img src={image.url} key={image.pucblic_id} />;
+                return <img src={image.url} key={image.pucblic_id} />;
               })}
           </Carousel>
         ) : (
@@ -38,7 +40,8 @@ const SingleProduct = (props) => {
         </Tabs>
       </div>
       <div className="col-md-6">
-            <h1 className="bg-info p-3">{title}</h1>
+        <h1 className="bg-info p-3">{title}</h1>
+
         <Card
           actions={[
             <div>
@@ -48,9 +51,18 @@ const SingleProduct = (props) => {
             <Link to="/">
               <HeartOutlined className="text-info" /> <br /> Add to Wishlist
             </Link>,
+            <RatingModal>
+              <StarRating
+                name={_id}
+                numberOfStars={5}
+                rating={star}
+                changeRating={onStarClick}
+                isSelectable={true}
+                starRatedColor="red"
+              />
+            </RatingModal>,
           ]}
         >
-
           <ProductListItem product={product} />
         </Card>
       </div>
