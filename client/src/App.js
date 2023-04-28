@@ -25,6 +25,9 @@ import ProductCreate from "./pages/admin/product.js/ProductCreate";
 import AllProducts from "./pages/admin/product.js/AllProducts.";
 import ProductUpdate from "./pages/admin/product.js/ProductUpdate";
 import Product from "./pages/Product";
+import CategoryHome from "./pages/category/CategoryHome";
+import subHome from "./pages/category/SubHome";
+import Shop from "./pages/Shop";
 
 function App() {
   const dispatch = useDispatch();
@@ -64,6 +67,9 @@ function App() {
         <Route exact path="/register/complete" component={RegisterComplete} />
         <Route exact path="/forgot/password" component={ForgotPassword} />
         <Route exact path="/product/:slug" component={Product} />
+        <Route exact path="/category/:slug" component={CategoryHome} />
+        <Route exact path="/sub/:slug" component={subHome} />
+        <Route exact path="/shop" component={Shop} />
         <UserRoute exact path="/user/history" component={History} />
         <UserRoute exact path="/user/password" component={Password} />
         <UserRoute exact path="/user/wishlist" component={Wishlist} />

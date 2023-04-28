@@ -118,8 +118,8 @@ exports.productsCount = async (req, res) => {
 };
 
 exports.productStar = async (req, res) => {
-  const product = await Product.findById(req.params.productId).exec();
-  const user = await User.findOne({ email: req.user.email }).exec();
+  const product = await Product.findById(req.params.productId);
+  const user = await User.findOne({ email: req.user.email });
 
   const { star } = req.body;
 
@@ -134,15 +134,211 @@ exports.productStar = async (req, res) => {
         $push: { ratings: { star: star, postedBy: user._id } },
       },
       { new: true }
-    ).exec();
+    );
     res.json(ratingAdded);
   } else {
     const ratingUpdated = await Product.updateOne(
       { ratings: { $elemMatch: existingRatingObject } },
       { $set: { "ratings.$.star": star } },
       { new: true }
-    ).exec();
+    );
     res.json(ratingUpdated);
   }
 };
 
+exports.listRelated = async (req, res) => {
+  // console.log(req.params.productId);
+  const product = await Product.findById(req.params.productId);
+  // console.log(product);
+  const realated = await Product.find({
+    _id: { $ne: product._id },
+    category: product.category,
+  })
+    .limit(4)
+    .populate("category")
+    .populate("subs")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    });
+  res.json(realated);
+};
+
+const handleQuery = async (req, res, query) => {
+  const products = await Product.find({ $text: { $search: `${query}` } })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    });
+
+  // console.log(products);
+  res.json(products);
+};
+
+const handlePrice = async (req, res, price) => {
+  try {
+    let products = await Product.find({
+      price: {
+        $gte: price[0],
+        $lte: price[1],
+      },
+    })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .populate({
+        path: "ratings",
+        populate: {
+          path: "postedBy",
+          model: "User",
+        },
+      });
+
+    res.json(products);
+  } catch (e) {
+    console.log(e);
+  }
+};
+const handleCategory = async (req, res, category) => {
+  try {
+    let products = await Product.find({ category: category })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .populate({
+        path: "ratings",
+        populate: {
+          path: "postedBy",
+          model: "User",
+        },
+      });
+    res.json(products);
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const handleStar = async (req, res, stars) => {
+  await Product.aggregate([
+    {
+      $project: {
+        document: "$$ROOT",
+        // title: "$title"
+        floorAverage: {
+          $floor: { $avg: "$ratings.star" },
+        },
+      },
+    },
+    { $match: { floorAverage: stars } },
+  ]).then(async (result) => {
+    await Product.find({ _id: result })
+      .populate("category", "_id name")
+      .populate("subs", "_id name")
+      .populate({
+        path: "ratings",
+        populate: {
+          path: "postedBy",
+          model: "User",
+        },
+      })
+      .then((pro) => {
+        res.json(pro);
+      });
+  });
+};
+const handleSub = async (req, res, sub) => {
+  await Product.find({
+    subs: sub,
+  })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    })
+    .then((result) => {
+      res.json(result);
+    });
+};
+
+const handleColor = async (req, res, color) => {
+  await Product.find({ color: color })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    }).then((result)=>{
+      res.json(result);
+    });
+};
+const handleBrand = async (req, res, brand) => {
+  await Product.find({ brand: brand })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    }).then((result)=>{
+      res.json(result);
+    });
+};
+const handleShipping = async (req, res, shipping) => {
+  await Product.find({ shipping })
+    .populate("category", "_id name")
+    .populate("subs", "_id name")
+    .populate({
+      path: "ratings",
+      populate: {
+        path: "postedBy",
+        model: "User",
+      },
+    }).then((result)=>{
+      res.json(result);
+    });
+};
+
+exports.searchFilters = async (req, res) => {
+  const { query, price, category, stars, sub, brand, color, shipping } =
+    req.body;
+
+  if (query) {
+    await handleQuery(req, res, query);
+  }
+  if (price) {
+    await handlePrice(req, res, price);
+  }
+  if (category) {
+    await handleCategory(req, res, category);
+  }
+  if (stars) {
+    await handleStar(req, res, stars);
+  }
+  if (sub) {
+    await handleSub(req, res, sub);
+  }
+  if (shipping) {
+    await handleShipping(req, res, shipping);
+  }
+  if (brand) {
+    await handleBrand(req, res, brand);
+  }
+  if (color) {
+    await handleColor(req, res, color);
+  }
+};

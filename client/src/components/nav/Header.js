@@ -4,6 +4,7 @@ import {
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import "antd/dist/antd-with-locales";
@@ -12,7 +13,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Auth } from "../../firebase";
 import { useDispatch, useSelector } from "react-redux";
-import Item from "antd/es/list/Item";
+import Search from "../Forms/Search";
 
 
 
@@ -46,9 +47,18 @@ function Header() {
         </Link>
       </Menu.Item>
 
+      <Menu.Item key="Shop" className="float-start" icon={<ShoppingOutlined />}>
+        <Link Link to="/shop">
+          Shop
+        </Link>
+      </Menu.Item>
+
+      <Menu.Item key="Search" className="ms-auto p-1">
+        <Search />
+      </Menu.Item>
       {user && (
         <Menu.SubMenu
-          className="ms-auto"
+          className=""
           key="SubMenu"
           icon={<SettingOutlined />}
           title={<span>{user.email && user.email.split("@")[0]}</span>}
@@ -69,7 +79,7 @@ function Header() {
       )}
 
       {!user && (
-        <Menu.Item className="ms-auto" key="Login" icon={<UserOutlined />}>
+        <Menu.Item className="" key="Login" icon={<UserOutlined />}>
           <Link Link to="/login">
             Login
           </Link>

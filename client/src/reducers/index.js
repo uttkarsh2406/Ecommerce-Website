@@ -1,7 +1,8 @@
-import { useReducer } from "./userReducer";
+import { userReducer } from "./userReducer";
 import { combineReducers } from "redux";
-
+import { searchReducer } from "./searchReducer";
 
 export const rootReducer=combineReducers({
-    user:useReducer,
+    user:userReducer,
+    search:searchReducer,
 });

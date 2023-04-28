@@ -8,6 +8,8 @@ import laptop from "./../../images/lapp.png";
 import ProductListItem from "./ProductListItem";
 import StarRating from "react-star-ratings";
 import RatingModal from "../modal/RatingModal";
+import { showAverage } from "../../functions/rating";
+
 const { Meta } = Card;
 
 const { TabPane } = Tabs;
@@ -41,7 +43,7 @@ const SingleProduct = (props) => {
       </div>
       <div className="col-md-6">
         <h1 className="bg-info p-3">{title}</h1>
-
+        {product && product.ratings && product.ratings.length>0 ? showAverage(product): <div className="text-center pt-1 pb-3">No Rating Yet!!</div>}
         <Card
           actions={[
             <div>
