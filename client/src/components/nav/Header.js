@@ -4,11 +4,11 @@ import {
   UserOutlined,
   UserAddOutlined,
   LogoutOutlined,
-  ShoppingOutlined,
+  ShoppingOutlined,ShoppingCartOutlined
 } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import "antd/dist/antd-with-locales";
-import { Menu } from "antd";
+import { Badge, Menu } from "antd";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Auth } from "../../firebase";
@@ -20,7 +20,7 @@ import Search from "../Forms/Search";
 function Header() {
   const [current, setCurrent] = useState("home");
   let dispatch = useDispatch();
-  let { user } = useSelector((state) => ({ ...state }));
+  let { user,cart } = useSelector((state) => ({ ...state }));
   function onClick(e) {
     // console.log(e);
     setCurrent(e.key);
@@ -50,6 +50,11 @@ function Header() {
       <Menu.Item key="Shop" className="float-start" icon={<ShoppingOutlined />}>
         <Link Link to="/shop">
           Shop
+        </Link>
+      </Menu.Item>
+      <Menu.Item key="Cart" className="float-start" icon={<ShoppingCartOutlined />}>
+        <Link Link to="/Cart">
+          <Badge count={cart.length} offset={[9,0 ]}>Cart</Badge>
         </Link>
       </Menu.Item>
 
