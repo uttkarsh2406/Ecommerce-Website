@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import ProductCardInCheckout from "../components/cards/ProductCardInCheckout";
+import { userCart } from "./../functions/user";
 
-
-const Cart = () => {
+const Cart = (props) => {
+  const { history } = props
   const { user, cart } = useSelector((state) => ({ ...state }));
   const dispatch = useDispatch();
 
@@ -30,17 +31,27 @@ const Cart = () => {
           </tr>
         </thead>
         {
-            cart.map((p)=>{
-                return (
-                    <ProductCardInCheckout key={p._id} p={p} />
-                );
-            })
+          cart.map((p) => {
+            return (
+              <ProductCardInCheckout key={p._id} p={p} />
+            );
+          })
         }
       </table>
     );
   };
 
-  const saveOrderToDb = () => {};
+  const saveOrderToDb = () => {
+    userCart(cart,user.token).then((res)=>{
+      console.log('Cart Post Result', res);
+      if(res.data.ok){
+        history.push('/checkout')
+
+      }
+    }).catch((err)=>{
+      console.log('Cart Save Error', err);
+    })
+  };
   return (
     <div className="container-fluid pt-2">
       <div className="row">
